@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { AccountBalanceCard, type Account } from './components/AccountBalanceCard'
+import type { Account } from './components/AccountBalanceCard'
+import { LiveBalance } from './components/LiveBalance'
 import './App.css'
 
 const initialAccount: Account = {
@@ -11,13 +12,7 @@ const initialAccount: Account = {
 }
 
 function App() {
-  const [account, setAccount] = useState(initialAccount)
   const [showTransactions, setShowTransactions] = useState(false)
-
-  async function refreshBalance() {
-    await new Promise((resolve) => setTimeout(resolve, 600))
-    setAccount((current) => ({ ...current }))
-  }
 
   return (
     <main className="page">
@@ -29,9 +24,8 @@ function App() {
         <p className="eyebrow">LA TUA PANORAMICA</p>
         <h1>Il tuo conto, a colpo d'occhio.</h1>
         <p className="intro">Tieni sotto controllo il saldo e i movimenti del tuo conto.</p>
-        <AccountBalanceCard
-          account={account}
-          onRefreshBalance={refreshBalance}
+        <LiveBalance
+          initialAccount={initialAccount}
           onViewTransactions={() => setShowTransactions((visible) => !visible)}
         />
         {showTransactions && <p className="notice">I movimenti saranno disponibili a breve.</p>}
