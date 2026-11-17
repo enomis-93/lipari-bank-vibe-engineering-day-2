@@ -1,0 +1,13 @@
+.card { background: white; border: 1px solid #e0ebe6; border-radius: 20px; padding: 28px; box-shadow: 0 12px 35px #174c3e0c; }
+.top, .balanceRow { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.top h2 { font-size: 1.2rem; margin: 5px 0 0; }
+.label { color: #71867f; font-size: .7rem; font-weight: 700; letter-spacing: .1em; margin: 0; }
+.badge { color: #126d58; background: #e8f5ee; border-radius: 100px; padding: 7px 12px; font-size: .7rem; font-weight: 700; }
+.iban { color: #71867f; font-size: .86rem; overflow-wrap: anywhere; margin: 14px 0 30px; }
+.balance { color: #123d32; font-size: clamp(2rem, 6vw, 2.8rem); font-weight: 700; letter-spacing: -.04em; margin: 6px 0 0; }
+.refresh { border: 1px solid #d8e6df; border-radius: 9px; color: #176f5b; background: white; padding: 10px 12px; cursor: pointer; }
+.refresh:disabled { opacity: .6; cursor: wait; }
+.error { color: #a52c30; font-size: .9rem; }
+.transactions { width: 100%; display: flex; justify-content: space-between; border: 0; border-radius: 10px; background: #116c57; color: white; font-weight: 600; padding: 15px 18px; margin-top: 28px; cursor: pointer; }
+.transactions:hover { background: #0c5846; }
+@media (max-width: 480px) { .card { padding: 20px; } .balanceRow { align-items: flex-start; flex-direction: column; } }
