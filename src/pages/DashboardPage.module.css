@@ -1,0 +1,5 @@
+.dashboard { padding: 56px 0 72px; }
+.accounts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 20px; }
+.movements { margin-top: 36px; padding: 24px 28px 8px; border: 1px solid #e0ebe6; border-radius: 20px; background: white; }
+.movements h2 { margin: 0 0 14px; color: #153d34; font-size: 1.2rem; }
+.list { list-style: none; padding: 0; margin: 0; }

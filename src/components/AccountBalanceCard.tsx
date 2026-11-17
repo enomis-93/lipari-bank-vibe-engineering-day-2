@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styles from './AccountBalanceCard.module.css'
 
 export type Account = {
@@ -25,19 +25,39 @@ export function AccountBalanceCard({
   onViewTransactions,
   onRefreshBalance,
 }: AccountBalanceCardProps) {
-  const [loading, setLoading] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [currentBalance, setCurrentBalance] = useState(account.balance)
   const [error, setError] = useState(false)
+  const refreshTimeout = useRef<number | null>(null)
 
-  async function handleRefresh() {
-    setLoading(true)
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      const variation = Math.random() * 20 - 10
+      setCurrentBalance((balance) => Math.round((balance + variation) * 100) / 100)
+    }, 30_000)
+
+    return () => window.clearInterval(interval)
+  }, [account.id])
+
+  useEffect(() => () => {
+    if (refreshTimeout.current !== null) window.clearTimeout(refreshTimeout.current)
+  }, [])
+
+  function handleRefresh() {
+    setIsRefreshing(true)
     setError(false)
-    try {
-      await onRefreshBalance()
-    } catch {
-      setError(true)
-    } finally {
-      setLoading(false)
-    }
+    refreshTimeout.current = window.setTimeout(() => {
+      void (async () => {
+        try {
+          await onRefreshBalance()
+        } catch {
+          setError(true)
+        } finally {
+          setIsRefreshing(false)
+          refreshTimeout.current = null
+        }
+      })()
+    }, 1000)
   }
 
   return (
@@ -53,16 +73,16 @@ export function AccountBalanceCard({
       <div className={styles.balanceRow}>
         <div>
           <p className={styles.label}>SALDO DISPONIBILE</p>
-          <p className={styles.balance} aria-live="polite">{currency.format(account.balance)}</p>
+          <p className={styles.balance} aria-live="polite">{currency.format(currentBalance)}</p>
         </div>
         <button
           type="button"
           className={styles.refresh}
           aria-label={`Aggiorna saldo ${account.name}`}
-          disabled={loading}
+          disabled={isRefreshing}
           onClick={handleRefresh}
         >
-          {loading ? 'Aggiornamento...' : '↻ Aggiorna'}
+          {isRefreshing ? 'Aggiornamento...' : '🔄 Aggiorna'}
         </button>
       </div>
       {error && <p className={styles.error} role="alert">Impossibile aggiornare il saldo. Riprova.</p>}

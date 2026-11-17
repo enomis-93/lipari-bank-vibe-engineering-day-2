@@ -1,0 +1,5 @@
+.header { display: flex; justify-content: space-between; align-items: center; padding: 24px 0; border-bottom: 1px solid #dfe7e4; }
+.brand { color: #0e4f43; font-weight: 800; letter-spacing: .16em; text-decoration: none; }
+.brand span { font-weight: 400; }
+.actions { display: flex; align-items: center; gap: 18px; }
+.demoLabel { color: #576e67; font-size: .85rem; }

@@ -1,13 +1,18 @@
 import '@testing-library/jest-dom/vitest'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AccountBalanceCard, type Account } from './AccountBalanceCard'
 
 const account: Account = {
   id: '1', name: 'Conto test', balance: 1234.56, type: 'BUSINESS', iban: 'IT00 TEST',
 }
 
-afterEach(cleanup)
+beforeEach(() => vi.useFakeTimers())
+afterEach(() => {
+  cleanup()
+  vi.useRealTimers()
+  vi.restoreAllMocks()
+})
 
 describe('AccountBalanceCard', () => {
   it('formats the balance, shows account details and opens transactions', () => {
@@ -21,7 +26,20 @@ describe('AccountBalanceCard', () => {
     expect(onViewTransactions).toHaveBeenCalledOnce()
   })
 
-  it('disables refresh while pending and restores it afterwards', async () => {
+  it('polls the balance every 30 seconds and cleans up the interval', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.75)
+    const { unmount } = render(<AccountBalanceCard account={account} onViewTransactions={() => {}} onRefreshBalance={() => {}} />)
+    const balance = screen.getByLabelText('Saldo Conto test').querySelector('[aria-live]')
+    const format = (amount: number) => new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(amount)
+    act(() => vi.advanceTimersByTime(29_999))
+    expect(balance?.textContent).toBe(format(1234.56))
+    act(() => vi.advanceTimersByTime(1))
+    expect(balance?.textContent).toBe(format(1239.56))
+    unmount()
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('disables refresh for one second and restores it afterwards', async () => {
     let finish!: () => void
     const refresh = vi.fn(() => new Promise<void>((resolve) => { finish = resolve }))
     render(<AccountBalanceCard account={account} onViewTransactions={() => {}} onRefreshBalance={refresh} />)
@@ -29,16 +47,20 @@ describe('AccountBalanceCard', () => {
     fireEvent.click(button)
     expect(button).toBeDisabled()
     expect(button).toHaveTextContent('Aggiornamento...')
+    expect(refresh).not.toHaveBeenCalled()
+    await act(async () => vi.advanceTimersByTimeAsync(1000))
+    expect(refresh).toHaveBeenCalledOnce()
+    expect(button).toBeDisabled()
     await act(async () => finish())
     expect(button).toBeEnabled()
-    expect(refresh).toHaveBeenCalledOnce()
   })
 
   it('reports refresh failures and allows retrying', async () => {
     render(<AccountBalanceCard account={account} onViewTransactions={() => {}} onRefreshBalance={() => Promise.reject(new Error('offline'))} />)
     const button = screen.getByRole('button', { name: 'Aggiorna saldo Conto test' })
     fireEvent.click(button)
-    expect(await screen.findByRole('alert')).toHaveTextContent('Impossibile aggiornare')
+    await act(async () => vi.advanceTimersByTimeAsync(1000))
+    expect(screen.getByRole('alert')).toHaveTextContent('Impossibile aggiornare')
     expect(button).toBeEnabled()
   })
 })

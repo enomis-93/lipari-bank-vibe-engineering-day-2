@@ -1,0 +1,9 @@
+.row { border-top: 1px solid #e8efeb; }
+.button { display: flex; align-items: center; gap: 18px; width: 100%; padding: 16px 4px; border: 0; background: transparent; color: #173c34; text-align: left; cursor: pointer; }
+.button:hover { background: #f7faf8; }
+.description { flex: 1; font-weight: 600; }
+.button time { color: #71867f; font-size: .82rem; }
+.income, .expense { min-width: 120px; text-align: right; font-weight: 700; white-space: nowrap; }
+.income { color: #127056; }
+.expense { color: #263d37; }
+@media (max-width: 560px) { .button { flex-wrap: wrap; gap: 6px 12px; } .description { flex-basis: calc(100% - 130px); } .button time { flex: 1; } .income, .expense { min-width: 0; } }

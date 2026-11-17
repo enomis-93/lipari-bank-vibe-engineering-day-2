@@ -1,17 +1,14 @@
 import '@testing-library/jest-dom/vitest'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, expect, it } from 'vitest'
 import App from './App'
 
 afterEach(cleanup)
 
-it('opens and closes the transaction list', () => {
+it('renders the header, notification bell, three accounts and five movements', () => {
   render(<App />)
-  const button = screen.getByRole('button', { name: 'Visualizza movimenti Conto principale' })
-  expect(screen.queryByRole('heading', { name: 'Ultimi movimenti' })).not.toBeInTheDocument()
-  fireEvent.click(button)
-  expect(screen.getByRole('heading', { name: 'Ultimi movimenti' })).toBeInTheDocument()
-  expect(screen.getAllByRole('listitem')).toHaveLength(3)
-  fireEvent.click(button)
-  expect(screen.queryByRole('heading', { name: 'Ultimi movimenti' })).not.toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Lipari Bank, home' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Notifiche: 0 non lette' })).toBeInTheDocument()
+  expect(screen.getAllByRole('article', { name: /^Saldo / })).toHaveLength(3)
+  expect(screen.getAllByRole('listitem')).toHaveLength(5)
 })
