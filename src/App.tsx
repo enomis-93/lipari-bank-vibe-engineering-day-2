@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import type { Account } from './components/AccountBalanceCard'
 import { LiveBalance } from './components/LiveBalance'
+import type { Transaction } from './components/TransactionItem'
+import { TransactionList } from './components/TransactionList'
 import './App.css'
 
 const initialAccount: Account = {
@@ -10,6 +12,12 @@ const initialAccount: Account = {
   type: 'PRIVATE',
   iban: 'IT60 X054 2811 1010 0000 0123 456',
 }
+
+const transactions: Transaction[] = [
+  { id: 'tx-1', description: 'Stipendio', amount: 2400, date: '2026-11-15T12:00:00Z' },
+  { id: 'tx-2', description: 'Spesa alimentare', amount: -64.3, date: '2026-11-14T12:00:00Z' },
+  { id: 'tx-3', description: 'Abbonamento mensile', amount: -12.99, date: '2026-11-12T12:00:00Z' },
+]
 
 function App() {
   const [showTransactions, setShowTransactions] = useState(false)
@@ -28,7 +36,7 @@ function App() {
           initialAccount={initialAccount}
           onViewTransactions={() => setShowTransactions((visible) => !visible)}
         />
-        {showTransactions && <p className="notice">I movimenti saranno disponibili a breve.</p>}
+        {showTransactions && <TransactionList transactions={transactions} />}
       </section>
     </main>
   )

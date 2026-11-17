@@ -1,75 +1,29 @@
-# React + TypeScript + Vite
+# Lipari Bank - demo React
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Una demo didattica realizzata con React 19, TypeScript e Vite. Saldo, IBAN e movimenti sono dati di esempio: non esiste un collegamento a un conto bancario o a un'API.
 
-Currently, two official plugins are available:
+## Avvio
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+È richiesto Node.js 22.12+ (oppure una versione compatibile con Vite).
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Il server di sviluppo mostra l'indirizzo locale nel terminale. Per le verifiche:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm test
+npm run lint
+npm run build
 ```
+
+## Funzionamento
+
+- `AccountBalanceCard` riceve il conto e le callback per i movimenti e l'aggiornamento. Formatta il saldo in euro con `Intl.NumberFormat`, mostra il tipo di conto e gestisce localmente caricamento ed eventuali errori del refresh.
+- `useInterval(callback, delay)` mantiene la callback più recente in un ref senza riavviare il timer a ogni render. `null` ferma l'intervallo e il cleanup lo elimina quando cambia il delay o il componente viene smontato.
+- `LiveBalance` simula un incremento di 0,05 euro ogni cinque secondi. Il refresh manuale simula una breve richiesta senza recuperare dati reali.
+- `TransactionList` usa l'ID stabile di ogni movimento come `key`, mai l'indice; `TransactionItem` visualizza importi con segno e date con `Intl.DateTimeFormat` in fuso `Europe/Rome`. Le date di esempio sono timestamp ISO.
+
+I test coprono anche callback aggiornate, pausa e cleanup del timer, caricamento e errore del refresh, formattazione e riordino dei movimenti.
